@@ -26,7 +26,7 @@ import scala.util.*
 import java.util.regex.*
 import java.net.{URLEncoder, URLDecoder}
 
-type TextStream = LazyList[Text throws StreamCutError]
+type TextStream = LazyList[Text]
 
 enum Direction:
   case Ltr, Rtl
@@ -86,7 +86,7 @@ extension (text: Text)
     (Text(text.s.substring(0, n min text.s.length).nn), Text(text.s.substring(n min text.s.length)
         .nn))
   
-  def snipWhere(pred: Char => Boolean, idx: Int = 0): (Text, Text) throws OutOfRangeError =
+  def snipWhere(pred: Char => Boolean, idx: Int = 0): (Text, Text) =
     snip(where(pred, idx))
 
   def camelCaseWords: List[Text] =
@@ -108,7 +108,7 @@ extension (text: Text)
   @targetName("times")
   infix def *(n: Int): Text = Text(IArray.fill(n)(text.s).mkString)
   
-  def apply(idx: Int): Char throws OutOfRangeError =
+  def apply(idx: Int): Char =
     if idx >= 0 && idx < text.s.length then text.s.charAt(idx)
     else throw OutOfRangeError(idx, 0, text.s.length)
 
@@ -121,7 +121,7 @@ extension (text: Text)
 
   @tailrec
   def where(pred: Char => Boolean, idx: Maybe[Int] = Unset, dir: Direction = Ltr)
-            : Int throws OutOfRangeError = dir match
+            : Int = dir match
     case Ltr =>
       val index = idx.otherwise(0)
       if index >= text.length then throw OutOfRangeError(index, 0, text.s.length)
@@ -192,7 +192,7 @@ object Interpolation:
 
   given [T: Show]: Insertion[Input, T] = value => Input(summon[Show[T]].show(value))
 
-  private def escape(str: Text): Text throws InterpolationError =
+  private def escape(str: Text): Text =
     val buf: StringBuilder = StringBuilder()
     
     def parseUnicode(chars: Text): Char =
